@@ -1,0 +1,184 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
+<dom-module id="dsc-polymer-pagination">
+
+    <style>
+      :host {
+
+      }
+
+      /* container innline-block */
+      .container-inline-block {
+        color: rgba(0,0,0,.54);
+        text-align: center;
+      }
+
+    </style>
+
+    <template>
+      <div class="container-inline-block">
+        <paper-icon-button icon="icons:first-page" id="btFirstPage" role="button" tabindex="-1" on-tap="_handleFirstPage"></paper-icon-button>
+        <paper-icon-button icon="icons:chevron-left" id="btPreviousPage" role="button" tabindex="-1" on-tap="_handlePreviousPage"></paper-icon-button>
+        <paper-icon-button icon="icons:chevron-right" id="btNextPage" role="button" tabindex="0" on-tap="_handleNextPage"></paper-icon-button>
+        <paper-icon-button icon="icons:last-page" id="btLastPage" role="button" tabindex="0" on-tap="_handleLastPage"></paper-icon-button>
+      </div>
+      <div class="container-inline-block">
+        <label>[[firstPageItem]]-[[lastPageItem]] de [[total]]</label>
+      </div>
+
+    </template>
+
+    <script>
+      Polymer({
+        is: 'dsc-polymer-pagination',
+
+        properties: {
+
+          /**
+           * Current page index. Start at 1.
+           */
+          page: {
+            type: Number,
+            observer: '_calculatePageItens',
+          },
+
+          /**
+           * Total of pages.
+           */
+          pages: {
+            type: Number,
+            observer: '_calculatePageItens',
+          },
+
+          /**
+           * Total of itens in all pages.
+           */
+          total: {
+            type: Number,
+            observer: '_calculatePageItens',
+          },
+
+          /**
+           * Quantity per page.
+           */
+          limit: {
+            type: Number,
+            observer: '_calculatePageItens',
+          },
+
+          /**
+           * First item of current page.
+           */
+          firstPageItem: {
+            type: Number,
+          },
+
+          /**
+           * Last item of current page.
+           */
+          lastPageItem: {
+            type: Number,
+          },
+
+        },
+
+        _getState: function() {
+          return {
+            page: this.page,
+            pages: this.pages,
+            total: this.total,
+            limit: this.limit,
+          };
+        },
+
+        /**
+         * First page paginator buttom handler.
+         */
+        _handleFirstPage: function() {
+          this.page = 1;
+          // fire event
+          this.fire('pagination-change', this._getState());
+        },
+
+        /**
+         * Previous page paginator buttom handler.
+         */
+        _handlePreviousPage: function() {
+          this.page--;
+          // fire event
+          this.fire('pagination-change', this._getState());
+        },
+
+        /**
+         * Next page paginator buttom handler.
+         */
+        _handleNextPage: function() {
+          this.page++;
+          // fire event
+          this.fire('pagination-change', this._getState());
+        },
+
+        /**
+         * Last page paginator buttom handler.
+         */
+        _handleLastPage: function() {
+          this.page = this.pages;
+          // fire event
+          this.fire('pagination-change', this._getState());
+        },
+
+        /**
+         * Observer all properties of pagination and ajust label and paginator.
+         */
+        _calculatePageItens: function() {
+          if (this.total > 0) {
+            var totalItems = this.total;
+            var currentPage = this.page;
+            var totalPages = this.pages;
+
+            var itemsPerPage = this.limit;
+
+            this.firstPageItem = (currentPage - 1) * itemsPerPage + 1;
+
+            this.lastPageItem = (this.firstPageItem + itemsPerPage) - 1;
+            if (currentPage === totalPages) {
+              this.lastPageItem = totalItems;
+            }
+
+            // refresh UI label
+            // this.$.paginatorLabel.innerText = firstPageItem + ' - ' + lastPageItem + ' of ' + totalItems;
+            // Polymer.dom(this.$.paginatorLabel).innerText = firstPageItem + ' - ' + lastPageItem + ' of ' + totalItems;
+            // manipulate buttons
+            if (this.page === 1) {
+              // this.$.btFirstPage.setAttribute('disabled', '');
+              Polymer.dom(this.$.btFirstPage).setAttribute('disabled', '');
+              // this.$.btPreviousPage.setAttribute('disabled', '');
+              Polymer.dom(this.$.btPreviousPage).setAttribute('disabled', '');
+            } else {
+              // this.$.btFirstPage.removeAttribute('disabled', '');
+              Polymer.dom(this.$.btFirstPage).removeAttribute('disabled', '');
+              // this.$.btPreviousPage.removeAttribute('disabled', '');
+              Polymer.dom(this.$.btPreviousPage).removeAttribute('disabled', '');
+            }
+            if (this.page === this.pages) {
+              // this.$.btLastPage.setAttribute('disabled', '');
+              Polymer.dom(this.$.btLastPage).setAttribute('disabled', '');
+              // this.$.btNextPage.setAttribute('disabled', '');
+              Polymer.dom(this.$.btNextPage).setAttribute('disabled', '');
+            } else {
+              // this.$.btLastPage.removeAttribute('disabled', '');
+              Polymer.dom(this.$.btLastPage).removeAttribute('disabled', '');
+              // this.$.btNextPage.removeAttribute('disabled', '');
+              Polymer.dom(this.$.btNextPage).removeAttribute('disabled', '');
+            }
+          }
+        },
+
+      });
+
+    </script>
+
+</dom-module>

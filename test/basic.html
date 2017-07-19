@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>dsc-polymer-datatable tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+  <link rel="import" href="../dsc-polymer-datatable.html">
+
+</head>
+<style>
+
+</style>
+<body>
+
+  <test-fixture id="basic">
+    <template>
+      <dsc-polymer-datatable
+          id="my-component"
+          selectable
+          title="Tests">
+        <dsc-columns>
+          <dsc-column type="number" label="ID" name="id" hidden></dsc-column>
+          <dsc-column type="string" label="Name" name="name" sortable></dsc-column>
+          <dsc-column type="number" label="Age" name="age"></dsc-column>
+          <dsc-column type="string" label="Date" name="date"></dsc-column>
+        </dsc-columns>
+        <div id="toolBar">
+          <paper-icon-button icon="add" on-click="_handlerNew" title="Add"></paper-icon-button>
+        </div>
+        <div id="toolBarOnOneSelect">
+          <paper-icon-button icon="create" on-click="_handlerEdit" title="Edit"></paper-icon-button>
+        </div>
+        <div id="toolBarOnSelect">
+          <paper-icon-button icon="delete" on-click="_handlerDelete" title="Remove"></paper-icon-button>
+        </div>
+      </dsc-polymer-datatable>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('<dsc-polymer-datatable>', function() {
+      var datatable;
+
+      setup(function() {
+        datatable = fixture('basic');
+        datatable.setData(
+          [
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'João da Silva',
+                'age': 23,
+                'date': '18/12/1999',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'José da Silveira',
+                'age': 37,
+                'date': '18/07/2002',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Maria da Silva Pinto',
+                'age': 20,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Benício Luiz Yuri Freitas',
+                'age': 29,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Marcelo Isaac Luan Monteiro',
+                'age': 33,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Fernando Diego Vitor Mendes',
+                'age': 45,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Augusto Pietro Gomes',
+                'age': 28,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Bernardo Elias Augusto Lima',
+                'age': 18,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Francisco Raul Benício Freitas',
+                'age': 53,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Francisco Raul Benício Freitas',
+                'age': 53,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Francisco Raul Benício Freitas',
+                'age': 53,
+                'date': '18/07/1993',
+            },
+            {
+                'id': '58c4a4393bc60cf0b0a66143',
+                'name': 'Francisco Raul Benício Freitas',
+                'age': 53,
+                'date': '18/07/1993',
+            },
+          ]
+        );
+      });
+
+      test('Check content integrity', function() {
+        expect(Polymer.dom(datatable).queryDistributedElements('*').length).to.be.equal(3);
+      });
+
+      test('Check background attribute', function() {
+        var background = datatable.getAttribute('background');
+        expect(background).to.be.equal('images/slide-1.jpg');
+      });
+
+      test('Verify background style', function() {
+        var background = window.getComputedStyle(datatable).backgroundImage;
+        expect(background).to.contain('images/slide-1.jpg');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-ajax/iron-ajax.html">
+<link rel="import" href="../dsc-polymer-pagination.html">
+
+<dom-module id="dsc-polymer-pagination-basic">
+  <template>
+    <style>
+      :host {
+        max-width: 600px;
+        margin: 0 auto;
+        display: block;
+        background: #f5f5f5;
+        padding: 60px;
+
+        --app-primary-color: #279DDA;
+        --app-secondary-color: #282d41;
+        --app-accent-color: var(--app-secondary-color);
+        --app-thickness: 3px; /*espessuara de bordas e elementos de design*/
+        --paper-button-ink-color: var(--app-accent-color);
+        --paper-icon-button-ink-color: var(--app-accent-color);
+        --paper-spinner-color: var(--app-accent-color);
+      }
+
+      paper-icon-button {
+        color: rgba(0, 0, 0, var(--dark-secondary-opacity));
+      }
+
+    </style>
+
+    <!-- <iron-ajax auto url="api-example.json" handle-as="json" on-response="_onResponse"></iron-ajax> -->
+    <iron-ajax
+        id="xhr"
+        method='GET'
+        headers='{{headers}}'
+        handle-as="json"
+        on-response="_onResponse">
+    </iron-ajax>
+
+    <dsc-polymer-pagination
+        id="my-component"
+        on-pagination-change="_handlerChange">
+    </dsc-polymer-pagination>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'dsc-polymer-pagination-basic',
+      properties: {
+
+        headers: {
+          type: Object,
+          // value: {"Authorization": "Bearer xxxxx.dfsdf.dfgdfg"},
+          value: {},
+        },
+
+      },
+
+      /**
+       * Transform object in query string paramns.
+       *
+       * @param {Object} obj Object of query strings.
+       *
+       * @return {String} Query string.
+       */
+      _object2Query: function toQueryString(obj) {
+        var parts = [];
+        for (var i in obj) {
+          if (obj.hasOwnProperty(i)) {
+            parts.push(encodeURIComponent(i) + '=' + encodeURIComponent(obj[i]));
+          }
+        }
+        return parts.join('&');
+      },
+
+      /**
+       * On table change(page, order or search).
+       *
+       * @param {object} e Object of event.
+       */
+      _handlerChange: function(e) {
+        console.log('_handlerChange');
+        console.log(e.detail);
+        var newState = e.detail;
+        var objQuery = {};
+        if (newState.search) objQuery.search = newState.search;
+        if (newState.page) objQuery.page = newState.page;
+        if (newState.limit) objQuery.limit = newState.limit;
+        if (newState.orderBy) objQuery.orderBy = newState.orderBy;
+        if (newState.orderDirection) objQuery.orderDirection = newState.orderDirection;
+        var strQuery = this._object2Query(objQuery);
+        this.xhrRequest(strQuery);
+      },
+
+      _onResponse: function(response) {
+        var data = response.detail.response;
+        console.log('DATA: ', data);
+        var component = this.$$('#my-component');
+        component.limit = 10;
+        component.orderBy = 'name';
+        component.orderDirection = 'asc';
+        component.pages = 2;
+        component.page = 1;
+        component.total = 12;
+      },
+
+      /**
+       * Send XHR request.
+       *
+       * @param {String} query String URL paramns.
+       */
+      xhrRequest: function(query) {
+        query = query || '';
+        if (query != '') {
+          query = '?' + query;
+        }
+        var xhr = this.$.xhr;
+        xhr.url = 'api-example.json' + query;
+        xhr.generateRequest();
+      },
+
+      /**
+       * On component ready.
+       */
+      ready: function() {
+        this.xhrRequest();
+      },
+
+    });
+  </script>
+</dom-module>
