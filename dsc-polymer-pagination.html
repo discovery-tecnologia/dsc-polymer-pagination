@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="dsc-pagination-icons.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
 
 <dom-module id="dsc-polymer-pagination">
@@ -20,10 +20,10 @@
 
     <template>
       <div class="container-inline-block">
-        <paper-icon-button icon="icons:first-page" id="btFirstPage" role="button" tabindex="-1" on-tap="_handleFirstPage"></paper-icon-button>
-        <paper-icon-button icon="icons:chevron-left" id="btPreviousPage" role="button" tabindex="-1" on-tap="_handlePreviousPage"></paper-icon-button>
-        <paper-icon-button icon="icons:chevron-right" id="btNextPage" role="button" tabindex="0" on-tap="_handleNextPage"></paper-icon-button>
-        <paper-icon-button icon="icons:last-page" id="btLastPage" role="button" tabindex="0" on-tap="_handleLastPage"></paper-icon-button>
+        <paper-icon-button icon="pagination-icons:skip-previous" disabled="[[previousButtonsDisabled]]" role="button" tabindex="-1" on-tap="_handleFirstPage"></paper-icon-button>
+        <paper-icon-button icon="pagination-icons:chevron-left" disabled="[[previousButtonsDisabled]]" role="button" tabindex="-1" on-tap="_handlePreviousPage"></paper-icon-button>
+        <paper-icon-button icon="pagination-icons:chevron-right" disabled="[[nextButtonsDisabled]]" role="button" tabindex="0" on-tap="_handleNextPage"></paper-icon-button>
+        <paper-icon-button icon="pagination-icons:skip-next" disabled="[[nextButtonsDisabled]]" role="button" tabindex="0" on-tap="_handleLastPage"></paper-icon-button>
       </div>
       <div class="container-inline-block">
         <label>[[firstPageItem]]-[[lastPageItem]] de [[total]]</label>
@@ -38,11 +38,19 @@
         properties: {
 
           /**
+           * Disable all buttons on loading.
+           */
+          loading: {
+            type: Boolean,
+            value: false,
+          },
+
+          /**
            * Current page index. Start at 1.
            */
           page: {
             type: Number,
-            observer: '_calculatePageItens',
+            notify: true,
           },
 
           /**
@@ -50,7 +58,7 @@
            */
           pages: {
             type: Number,
-            observer: '_calculatePageItens',
+            notify: true,
           },
 
           /**
@@ -58,7 +66,7 @@
            */
           total: {
             type: Number,
-            observer: '_calculatePageItens',
+            notify: true,
           },
 
           /**
@@ -66,7 +74,7 @@
            */
           limit: {
             type: Number,
-            observer: '_calculatePageItens',
+            notify: true,
           },
 
           /**
@@ -74,6 +82,8 @@
            */
           firstPageItem: {
             type: Number,
+            notify: true,
+            computed: '_computedFirstPageItem(page, pages, total, limit)',
           },
 
           /**
@@ -81,100 +91,118 @@
            */
           lastPageItem: {
             type: Number,
+            notify: true,
+            computed: '_computedLastPageItem(page, pages, total, limit, firstPageItem)',
+          },
+
+          /**
+           * Disabled state of first and previous button.
+           */
+          previousButtonsDisabled: {
+            type: Boolean,
+            notify: true,
+            value: true,
+            computed: '_computedPreviousButtonsDisabled(loading, page, pages)',
+          },
+
+          /**
+           * Disabled state of next and last button.
+           */
+          nextButtonsDisabled: {
+            type: Boolean,
+            notify: true,
+            value: true,
+            computed: '_computedNextButtonsDisabled(loading, page, pages)',
           },
 
         },
 
-        _getState: function() {
-          return {
-            page: this.page,
-            pages: this.pages,
-            total: this.total,
-            limit: this.limit,
-          };
+        /**
+         * Compute disable state of first and previous button.
+         */
+        _computedPreviousButtonsDisabled: function(loading, page) {
+          return (loading || page === 1);
+        },
+
+        /**
+         * Compute disable state of next and last button.
+         */
+        _computedNextButtonsDisabled: function(loading, page, pages) {
+          return (loading || page === pages);
         },
 
         /**
          * First page paginator buttom handler.
          */
         _handleFirstPage: function() {
-          this.page = 1;
-          // fire event
-          this.fire('pagination-change', this._getState());
+          var state = this._getState();
+          state.page = 1;
+          this.fire('pagination-change', state);
         },
 
         /**
          * Previous page paginator buttom handler.
          */
         _handlePreviousPage: function() {
-          this.page--;
-          // fire event
-          this.fire('pagination-change', this._getState());
+          var state = this._getState();
+          state.page--;
+          this.fire('pagination-change', state);
         },
 
         /**
          * Next page paginator buttom handler.
          */
         _handleNextPage: function() {
-          this.page++;
-          // fire event
-          this.fire('pagination-change', this._getState());
+          var state = this._getState();
+          state.page++;
+          this.fire('pagination-change', state);
         },
 
         /**
          * Last page paginator buttom handler.
          */
         _handleLastPage: function() {
-          this.page = this.pages;
-          // fire event
-          this.fire('pagination-change', this._getState());
+          var state = this._getState();
+          state.page = this.pages;
+          this.fire('pagination-change', state);
+
         },
 
         /**
-         * Observer all properties of pagination and ajust label and paginator.
+         * Get current state as object. State is changed only by paramns.
          */
-        _calculatePageItens: function() {
-          if (this.total > 0) {
-            var totalItems = this.total;
-            var currentPage = this.page;
-            var totalPages = this.pages;
+        _getState: function() {
+          return {
+            page: this.page,
+            pages: this.pages,
+            total: this.total,
+            limit: this.limit,
+            firstPageItem: this.firstPageItem,
+            lastPageItem: this.lastPageItem,
+          };
+        },
 
-            var itemsPerPage = this.limit;
-
-            this.firstPageItem = (currentPage - 1) * itemsPerPage + 1;
-
-            this.lastPageItem = (this.firstPageItem + itemsPerPage) - 1;
-            if (currentPage === totalPages) {
-              this.lastPageItem = totalItems;
-            }
-
-            // refresh UI label
-            // this.$.paginatorLabel.innerText = firstPageItem + ' - ' + lastPageItem + ' of ' + totalItems;
-            // Polymer.dom(this.$.paginatorLabel).innerText = firstPageItem + ' - ' + lastPageItem + ' of ' + totalItems;
-            // manipulate buttons
-            if (this.page === 1) {
-              // this.$.btFirstPage.setAttribute('disabled', '');
-              Polymer.dom(this.$.btFirstPage).setAttribute('disabled', '');
-              // this.$.btPreviousPage.setAttribute('disabled', '');
-              Polymer.dom(this.$.btPreviousPage).setAttribute('disabled', '');
-            } else {
-              // this.$.btFirstPage.removeAttribute('disabled', '');
-              Polymer.dom(this.$.btFirstPage).removeAttribute('disabled', '');
-              // this.$.btPreviousPage.removeAttribute('disabled', '');
-              Polymer.dom(this.$.btPreviousPage).removeAttribute('disabled', '');
-            }
-            if (this.page === this.pages) {
-              // this.$.btLastPage.setAttribute('disabled', '');
-              Polymer.dom(this.$.btLastPage).setAttribute('disabled', '');
-              // this.$.btNextPage.setAttribute('disabled', '');
-              Polymer.dom(this.$.btNextPage).setAttribute('disabled', '');
-            } else {
-              // this.$.btLastPage.removeAttribute('disabled', '');
-              Polymer.dom(this.$.btLastPage).removeAttribute('disabled', '');
-              // this.$.btNextPage.removeAttribute('disabled', '');
-              Polymer.dom(this.$.btNextPage).removeAttribute('disabled', '');
-            }
+        /**
+         * compute attribute value for firstItemPage.
+         */
+        _computedFirstPageItem: function(page, pages, total, limit) {
+          if (total > 0) {
+            return (page - 1) * limit + 1;
           }
+          return 0;
+        },
+
+        /**
+         * compute attribute value for LastItemPage.
+         */
+        _computedLastPageItem: function(page, pages, total, limit, firstPageItem) {
+          if (this.total > 0) {
+            if (page === pages) {
+              return total;
+            }
+            return (firstPageItem + limit) - 1;
+          }
+          return 0;
         },
 
       });
