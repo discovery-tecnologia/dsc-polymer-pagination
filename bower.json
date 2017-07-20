@@ -33,8 +33,7 @@
     "polymer": "polymer/polymer#^1.4.0",
     "iron-test-helpers": "^1.4.0",
     "paper-icon-button": "^1.1.4",
-    "iron-icon": "^1.0.12",
-    "iron-ajax": "^1.4.3"
+    "iron-icon": "^1.0.12"
   },
   "devDependencies": {
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",

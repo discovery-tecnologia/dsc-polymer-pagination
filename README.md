@@ -35,22 +35,22 @@ Example usage:
 
 ```html
 <dsc-polymer-pagination
-        id="my-component"
+        page="[[page]]"
+        pages="[[pages]]"
+        limit="[[limit]]"
+        total="[[total]]"
+        loading="[[loading]]"
         on-pagination-change="_handlerChange">
-</dsc-polymer-pagination>
+    </dsc-polymer-pagination>
 ```
 
 ## API Reference
-
-It is possible to include elements to be displayed in the header by means of ID **toolBar**.
-
-If the elements need to be displayed only when there is a selected row or more, use their IDs **toolBarOnOneSelect** or **toolBarOnSelect**
-
 
 ### Properties
 
 | Property       | Description                                                      | Default |
 |:---------------|------------------------------------------------------------------|---------|
+| loading        | Block all buttons.                                               | null    |
 | limit          | Quantity per page.                                               | null    |
 | pages          | Total number of pages.                                           | null    |
 | page           | Current page number.                                             | null    |
@@ -58,9 +58,9 @@ If the elements need to be displayed only when there is a selected row or more, 
 
 ### Events
 
-| Event            | Description                                      |
-|:-----------------|--------------------------------------------------|
-| pagination-change | Event of one or more of the following states: page and limit. |                                  |
+| Event             | Description                                                    |
+|:------------------|----------------------------------------------------------------|
+| pagination-change | Event of one or more of the following states: page and limit.  |
 
 ## Test
 
